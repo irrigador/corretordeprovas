@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corretor de Gabarito</title>
+</head>
+<body>
+    <h1>Upload do Gabarito</h1>
+    <input type="file" id="upload" accept="image/*">
+    <button onclick="processarGabarito()">Processar Gabarito</button>
+    <h2 id="resultado">Nota: </h2>
+
+    <script src="https://docs.opencv.org/4.x/opencv.js"></script>
+    <script>
+        let gabaritoCorreto = ['A', 'B', 'C', 'D', 'E']; // Respostas corretas
+
+        function processarGabarito() {
+            const input = document.getElementById('upload');
+            if (!input.files[0]) {
+                alert("Por favor, carregue uma imagem.");
+                return;
+            }
+
+            const img = new Image();
+            img.src = URL.createObjectURL(input.files[0]);
+            img.onload = function () {
+                let src = cv.imread(img); // Lê a imagem
+                cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0); // Converte para escala de cinza
+                cv.threshold(src, src, 127, 255, cv.THRESH_BINARY_INV); // Binarização para destacar marcações
+
+                // TODO: Detectar as marcações e comparar com o gabarito
+
+                // Exemplo simplificado: mostra apenas uma mensagem
+                let acertos = 3; // Substitua pelo número real de acertos detectados
+                let total = gabaritoCorreto.length;
+                let porcentagem = (acertos / total) * 100;
+                
+                document.getElementById("resultado").innerText = `Nota: ${porcentagem.toFixed(2)}%`;
+                
+                src.delete(); // Libera memória
+            };
+        }
+    </script>
+</body>
+</html>
